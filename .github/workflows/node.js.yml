@@ -19,7 +19,7 @@ jobs:
     - name: Checkout juice-shop
       uses: actions/checkout@v4
       with:
-        repository: juice-shop/juice-shop  # Corrigido aqui
+        repository: juice-shop/juice-shop
         path: juice-shop
 
     - name: Use Node.js ${{ matrix.node-version }}
@@ -29,9 +29,16 @@ jobs:
         cache: 'npm'
 
     - name: Install dependencies
-      run: npm install  # Mudança para instalar no diretório correto
+      run: npm install ./juice-shop
+
+    - name: Check for lock file
+      run: |
+        if [ ! -f juice-shop/package-lock.json ]; then
+          echo "package-lock.json not found!"
+          exit 1
+        fi
 
     - name: Run Snyk to check for vulnerabilities
-      uses: snyk/actions/node@master  # Ação corrigida para Node.js
+      uses: snyk/actions/node@master
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
