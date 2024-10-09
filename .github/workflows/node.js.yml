@@ -8,7 +8,6 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     strategy:
@@ -31,13 +30,13 @@ jobs:
     - name: Install dependencies
       run: |
         cd juice-shop
-        npm install || { echo "No dependencies found."; exit 0; }  # Tenta instalar, mas não falha se não houver dependências
+        npm install  # Isso irá gerar um novo package-lock.json, mesmo que ele esteja no .gitignore
 
-    - name: Check for lock file
+    - name: Verify lock file
       run: |
         if [ ! -f juice-shop/package-lock.json ]; then
-          echo "package-lock.json not found. Creating an empty file to proceed.";
-          touch juice-shop/package-lock.json;  # Cria um arquivo vazio para evitar erros no Snyk
+          echo "package-lock.json not found. This is required for Snyk.";
+          exit 1;
         fi
 
     - name: Run Snyk to check for vulnerabilities
