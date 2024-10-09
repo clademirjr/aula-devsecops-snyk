@@ -15,11 +15,8 @@ jobs:
         node-version: [20.x]
 
     steps:
-    - name: Checkout juice-shop
+    - name: Checkout repository
       uses: actions/checkout@v4
-      with:
-        repository: juice-shop/juice-shop
-        path: juice-shop
 
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4
@@ -29,14 +26,13 @@ jobs:
 
     - name: Install dependencies
       run: |
-        cd juice-shop
-        npm install  # Isso irá gerar um novo package-lock.json, mesmo que ele esteja no .gitignore
+        npm install  # Isso deve gerar o package-lock.json
 
-    - name: Verify lock file
+    - name: Ensure package-lock.json exists
       run: |
-        if [ ! -f juice-shop/package-lock.json ]; then
-          echo "package-lock.json not found. This is required for Snyk.";
-          exit 1;
+        if [ ! -f package-lock.json ]; then
+          echo "Error: package-lock.json not found. Generating file.";
+          npm install --package-lock-only;  # Gera o package-lock.json sem instalar as dependências
         fi
 
     - name: Run Snyk to check for vulnerabilities
